@@ -1,5 +1,4 @@
-#  Genoo [![Build Status](https://travis-ci.org/genoo-source/wp-lifterlms-wpmktgengine-extension.svg?branch=master)](https://travis-ci.org/genoo-source/wp-lifterlms-wpmktgengine-extension) [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) [![Plugin Version](https://img.shields.io/wordpress/plugin/v/lifterlms-wpmktgengine-extension.svg)](https://wordpress.org/plugins/lifterlms-wpmktgengine-extension)
-
+#  LifterLMS - WPMktgEngine | Genoo Extension [![Build Status](https://travis-ci.org/genoo-source/wp-lifterlms-wpmktgengine-extension.svg?branch=master)](https://travis-ci.org/genoo-source/wp-lifterlms-wpmktgengine-extension) [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) [![Plugin Version](https://img.shields.io/wordpress/plugin/v/lifterlms-wpmktgengine-extension.svg)](https://wordpress.org/plugins/lifterlms-wpmktgengine-extension)
 
 This is a mirror of the Genoo WordPress plugin found here. https://wordpress.org/plugins/lifterlms-wpmktgengine-extension/
 
