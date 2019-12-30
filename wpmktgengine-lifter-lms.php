@@ -5,7 +5,7 @@
     Author:  Genoo, LLC
     Author URI: http://www.genoo.com/
     Author Email: info@genoo.com
-    Version: 1.2.50
+    Version: 1.2.052
     License: GPLv2
 */
 /*
@@ -310,6 +310,9 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 	 * Genoo Leads, recompile to add ecommerce
 	 */
 	add_filter('option_genooLeads', function($array){
+    if(!is_array($array)){
+      $array = array();
+    }
 		// Lead type
 		$leadType = 0;
 		// Get saved
