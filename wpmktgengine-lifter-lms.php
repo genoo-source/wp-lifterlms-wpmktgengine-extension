@@ -339,8 +339,21 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 			$api->putActivityByMail($user->user_email, 'viewed course', '' . $post->post_title . '', '', get_permalink($post->ID));
 		} else if ('lesson' === get_post_type()
 			AND is_singular()){
-			global $post;
-			$parent = get_post_meta($post->ID, '_parent_course', TRUE);
+			global $post,$wpdb;
+		
+		 $course_id  =get_post_meta($post->ID,'_llms_parent_course', true);
+	    
+		    $product = get_post($course_id);
+		  //  $starts = get_post_meta($course_id, '_start_course_ref',$user->ID);
+		    $starts = $wpdb->get_results("SELECT * FROM $wpdb->postmeta
+                     WHERE post_id=$course_id AND meta_key = '_start_course_ref' AND  meta_value = '".$user->ID."' LIMIT 1");
+		 if(!$starts)
+		    {
+		    $api->putActivityByMail($user->user_email, 'started course', '' . $product->post_title . '', '', get_permalink($product->ID));
+		   add_post_meta($course_id,'_start_course_ref',$user->ID);
+		    }
+           
+  	       	$parent = get_post_meta($post->ID, '_parent_course', TRUE);
 			$api->putActivityByMail($user->user_email, 'viewed lesson', '' . $post->post_title . ' - ' . get_post($parent)->post_title . '', '', get_permalink($post->ID));
 		}
 	}, 10);
@@ -349,7 +362,7 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 	 * Started Course (name of course)(works)
 	 */
 
-	add_filter('lifterlms_before_order_process', function($order) use ($api){
+	/* add_filter('lifterlms_before_order_process', function($order) use ($api){
 		// Get user
 		$user = wp_get_current_user();
 		if(isset($_POST['product_id'])){
@@ -359,7 +372,7 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 			}
 		}
 		return $order;
-	}, 10, 1);
+	}, 10, 1); */
 
 	/**
 	 * Completed Lesson (name of Lesson - name of course)(works)
