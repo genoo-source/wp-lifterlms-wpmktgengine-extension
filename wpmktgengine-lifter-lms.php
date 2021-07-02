@@ -5,7 +5,7 @@
     Author:  Genoo, LLC
     Author URI: http://www.genoo.com/
     Author Email: info@genoo.com
-    Version: 1.2.053
+    Version: 1.2.054
     License: GPLv2
 */
 /*
@@ -193,14 +193,32 @@ register_activation_hook(__FILE__, function(){
 							'name' => 'order refund full',
 							'description' => ''
 						),
-						array(
-							'name' => 'order refund partial',
-							'description' => ''
-						),
-                        array(
+					  array(
                             'name' => 'viewed lesson',
                             'description' => ''
                         ),
+                        
+                     array(
+                         'name' => 'Quiz completed',
+                         'description' => ''
+                         ),
+                    array(
+                         'name' => 'Quiz passed',
+                         'description' => ''
+                         ),
+                    array(
+                         'name' => 'Quiz failed',
+                         'description' => ''
+                         ),
+                      array(
+                         'name' => 'Certificate Awarded',
+                         'description' => ''
+                         ),   
+                         
+                       array(
+                         'name' => 'Achievement Awarded',
+                         'description' => ''
+                         ),    
 					)
 				);
 			} catch(\Exception $e){
@@ -221,8 +239,6 @@ register_activation_hook(__FILE__, function(){
 		}
 	}
 });
-
-
 
 /**
  * Plugin loaded
@@ -328,6 +344,9 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 	 * Viewed Course (name of course viewed)(works)
 	 * Viewed Lesson (name of Lesson - name of course)(works)
 	 */
+	 	/**
+        	 * Started Course (name of course)(works)
+        	 */
 
 	add_action('wp', function() use ($api){
 		// Get user
@@ -336,30 +355,29 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 			AND is_singular()){
 			// Course
 			global $post;
-			$api->putActivityByMail($user->user_email, 'viewed course', '' . $post->post_title . '', '', get_permalink($post->ID));
+			$api->putActivityByMail($user->user_email, 'Viewed course', '' . $post->post_title . '', '', get_permalink($post->ID));
 		} else if ('lesson' === get_post_type()
 			AND is_singular()){
-			global $post;
-			$parent = get_post_meta($post->ID, '_parent_course', TRUE);
-			$api->putActivityByMail($user->user_email, 'viewed lesson', '' . $post->post_title . ' - ' . get_post($parent)->post_title . '', '', get_permalink($post->ID));
+			global $post,$wpdb;
+			
+	    	 $course_id  =get_post_meta($post->ID,'_llms_parent_course', true);
+	    	 
+	         $product = get_post($course_id);
+	
+	    $starts = $wpdb->get_results("SELECT * FROM $wpdb->postmeta
+                     WHERE post_id=$course_id AND meta_key = '_start_course_ref' AND  meta_value = '".$user->ID."' LIMIT 1");
+               
+		 if(!$starts)
+		    {
+		    $api->putActivityByMail($user->user_email, 'Started course', '' . $product->post_title . '', '', get_permalink($product->ID));
+		   add_post_meta($course_id,'_start_course_ref',$user->ID);
+		    }
+           
+  	       	$parent = get_post_meta($post->ID, '_parent_course', TRUE);
+			$api->putActivityByMail($user->user_email, 'Viewed lesson', '' . $post->post_title . ' - ' . get_post($parent)->post_title . '', '', get_permalink($post->ID));
 		}
 	}, 10);
 
-	/**
-	 * Started Course (name of course)(works)
-	 */
-
-	add_filter('lifterlms_before_order_process', function($order) use ($api){
-		// Get user
-		$user = wp_get_current_user();
-		if(isset($_POST['product_id'])){
-			$product = get_post($_POST['product_id']);
-			if($product instanceof \WP_Post){
-				$api->putActivityByMail($user->user_email, 'started course', '' . $product->post_title . '', '', get_permalink($product->ID));
-			}
-		}
-		return $order;
-	}, 10, 1);
 
 	/**
 	 * Completed Lesson (name of Lesson - name of course)(works)
@@ -370,20 +388,88 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 		$user = new \WP_User($user_id);
 		$lesson = get_post($lesson_id);
 		$parent = get_post_meta($lesson->ID, '_parent_course', TRUE);
-		$api->putActivityByMail($user->user_email, 'completed lesson', '' . $lesson->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($lesson->ID));
+		$api->putActivityByMail($user->user_email, 'Completed lesson', '' . $lesson->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($lesson->ID));
 	}, 10, 2);
+	
+	add_action('lifterlms_quiz_completed',function($user_id, $quiz_id) use ($api){
+	    global $wpdb;
+	    	$user = new \WP_User($user_id);
+	    	$quiz_id = get_post($quiz_id);
+	    $parent = get_post_meta($quiz_id->ID, '_llms_lesson_id', TRUE);
+	  //  $attempt = $wpdb->get_row( "SELECT 'status' FROM $wpdb->lifterlms_quiz_attempts WHERE quiz_id = $quiz_id AND lesson_id =$parent");
+     	$api->putActivityByMail($user->user_email, 'Quiz completed', '' . $quiz_id->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($quiz_id->ID));
+    
+	}, 10, 2);
+	
+	 add_action('lifterlms_quiz_failed',function($user_id, $quiz_id) use ($api){
+	    	$user = new \WP_User($user_id);
+	    	$quiz_id = get_post($quiz_id);
+	    $parent = get_post_meta($quiz_id->ID, '_llms_lesson_id', TRUE);
+	 	$api->putActivityByMail($user->user_email, 'Quiz failed', '' . $quiz_id->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($quiz_id->ID));
+	}, 10, 2);
+	
+	 add_action('lifterlms_quiz_passed',function($user_id, $quiz_id) use ($api){
+	    	$user = new \WP_User($user_id);
+	    	$quiz_id = get_post($quiz_id);
+	    $parent = get_post_meta($quiz_id->ID, '_llms_lesson_id', TRUE);
+	 	$api->putActivityByMail($user->user_email, 'Quiz passed', '' . $quiz_id->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($quiz_id->ID));
+	}, 10, 2);
+	   
+
 
 	/**
 	 * Completed Course (name of course)(works)
 	 */
 
 	add_action('lifterlms_course_completed', function($user_id, $course_id) use ($api){
+	    global $wpdb;
 		// Get user
 		$user = new \WP_User($user_id);
 		$course = get_post($course_id);
-		$api->putActivityByMail($user->user_email, 'completed course', '' . $course->post_title . '', '', get_permalink($course->ID));
+		$api->putActivityByMail($user->user_email, 'Completed course', '' . $course->post_title . '', '', get_permalink($course->ID));
+		$api->putActivityByMail($user->user_email, 'Completed section', '' . $course->post_title . '', '', get_permalink($course->ID));
+ 
 	}, 10, 2);
+	
 
+ add_action('llms_user_earned_certificate', function() use ($api){
+          
+    global $wpdb;
+        
+   $user = wp_get_current_user();
+      	
+   $certificates = $wpdb->get_results("SELECT post_id,meta_value FROM {$wpdb->prefix}lifterlms_user_postmeta WHERE user_id = $user->ID AND meta_key = '_certificate_earned'");
+        
+   foreach($certificates as $certificate):
+           
+         
+   endforeach;
+    
+    $lifterlms_certificate = get_post($certificate->meta_value);
+       
+    $api->putActivityByMail($user->user_email, 'Certificate Awarded', '' . $lifterlms_certificate->post_title . '', '', get_permalink($lifterlms_certificate->ID));
+    
+
+ });
+  add_action('llms_user_earned_achievement', function() use ($api){
+          
+     global $wpdb;
+        
+     $user = wp_get_current_user();
+      	
+    $certificates = $wpdb->get_results("SELECT post_id,meta_value FROM {$wpdb->prefix}lifterlms_user_postmeta WHERE user_id = $user->ID AND meta_key = '_achievement_earned'");
+        
+    foreach($certificates as $certificate):
+           
+     
+    endforeach;
+    
+    $achievement_certificate = get_post($certificate->meta_value);
+		
+    $api->putActivityByMail($user->user_email, 'Achievement Awarded', '' . $achievement_certificate->post_title . '', '', get_permalink($achievement_certificate->ID));
+    
+
+ });
 	/**
 	 * Actual Order
 	 */
@@ -496,14 +582,14 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 									$cartOrder->actionOrderFullfillment();
 									$cartOrder->setUser($lead_id);
 									$cartOrder->setBillingAddress(
-										$order->billing_address_1,
-										$order->billing_address_2,
-										$order->billing_city,
-										$order->billing_country,
-										'',
-										$order->billing_zip,
-										'',
-										$order->billing_state
+									$order->billing_address_1,
+									$order->billing_address_2,
+									$order->billing_city,
+									$order->billing_country,
+									'',
+									$order->billing_zip,
+									'',
+									$order->billing_state
 									);
 									$cartOrder->setAddressShippingSameAsBilling();
 									//$cartOrder->order_number = $data['caffitid'];
@@ -654,6 +740,7 @@ if(!function_exists('genoo_wpme_deactivate_plugin')){
 		exit();
 	}
 }
+
 
 
 //apply_filters( 'lifterlms_lesson_start_quiz_redirect', $redirect );
