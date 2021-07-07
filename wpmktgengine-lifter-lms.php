@@ -393,30 +393,43 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
 	
 	add_action('lifterlms_quiz_completed',function($user_id, $quiz_id) use ($api){
 	    global $wpdb;
-	    	$user = new \WP_User($user_id);
-	    	$quiz_id = get_post($quiz_id);
-	    $parent = get_post_meta($quiz_id->ID, '_llms_lesson_id', TRUE);
-	  //  $attempt = $wpdb->get_row( "SELECT 'status' FROM $wpdb->lifterlms_quiz_attempts WHERE quiz_id = $quiz_id AND lesson_id =$parent");
-     	$api->putActivityByMail($user->user_email, 'Quiz completed', '' . $quiz_id->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($quiz_id->ID));
-    
+
+	  $query_items = quiz_state($user_id,$quiz_id);
+	  
+	  $api->putActivityByMail($query_items['user']->user_email, 'Quiz completed', '' . $query_items['quiz_ids']->post_title . ' - '. get_post($query_items['parent'])->post_title . '', '', get_permalink($query_items['quiz_ids']->ID));
+
 	}, 10, 2);
 	
 	 add_action('lifterlms_quiz_failed',function($user_id, $quiz_id) use ($api){
-	    	$user = new \WP_User($user_id);
-	    	$quiz_id = get_post($quiz_id);
-	    $parent = get_post_meta($quiz_id->ID, '_llms_lesson_id', TRUE);
-	 	$api->putActivityByMail($user->user_email, 'Quiz failed', '' . $quiz_id->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($quiz_id->ID));
+	     
+	 $query_items = quiz_state($user_id,$quiz_id);
+	   
+	 $api->putActivityByMail($query_items['user']->user_email, 'Quiz failed', '' . $query_items['quiz_ids']->post_title . ' - '. get_post($query_items['parent'])->post_title . '', '', get_permalink($query_items['quiz_ids']->ID));
+
 	}, 10, 2);
 	
 	 add_action('lifterlms_quiz_passed',function($user_id, $quiz_id) use ($api){
-	    	$user = new \WP_User($user_id);
-	    	$quiz_id = get_post($quiz_id);
-	    $parent = get_post_meta($quiz_id->ID, '_llms_lesson_id', TRUE);
-	 	$api->putActivityByMail($user->user_email, 'Quiz passed', '' . $quiz_id->post_title . ' - '. get_post($parent)->post_title . '', '', get_permalink($quiz_id->ID));
+	   
+	   $query_items = quiz_state($user_id,$quiz_id);
+	   
+	   $api->putActivityByMail($query_items['user']->user_email, 'Quiz passed', '' . $query_items['quiz_ids']->post_title . ' - '. get_post($query_items['parent'])->post_title . '', '', get_permalink($query_items['quiz_ids']->ID));
+
 	}, 10, 2);
 	   
 
+ function quiz_state($user_id,$quiz_id)
+ {
+     
+     $complete_arrays = array();
+     
+    $complete_arrays['user'] = new \WP_User($user_id);
+    
+   	$complete_arrays['quiz_ids'] = get_post($quiz_id);
+	
+    $complete_arrays['parent']	 = get_post_meta($complete_arrays['quiz_ids']->ID, '_llms_lesson_id', TRUE);
 
+    return $complete_arrays;	
+ }
 	/**
 	 * Completed Course (name of course)(works)
 	 */
@@ -440,12 +453,17 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
       	
    $certificates = $wpdb->get_results("SELECT post_id,meta_value FROM {$wpdb->prefix}lifterlms_user_postmeta WHERE user_id = $user->ID AND meta_key = '_certificate_earned'");
         
+    $i=0;
+        
    foreach($certificates as $certificate):
-           
-         
+       
+    if($i%2 == 0){
+      $certificatevalue = $certificate->meta_value;  
+    }
+    $i++;  
    endforeach;
     
-    $lifterlms_certificate = get_post($certificate->meta_value);
+    $lifterlms_certificate = get_post($certificatevalue);
        
     $api->putActivityByMail($user->user_email, 'Certificate Awarded', '' . $lifterlms_certificate->post_title . '', '', get_permalink($lifterlms_certificate->ID));
     
@@ -458,13 +476,22 @@ add_action('wpmktengine_init', function($repositarySettings, $api, $cache){
      $user = wp_get_current_user();
       	
     $certificates = $wpdb->get_results("SELECT post_id,meta_value FROM {$wpdb->prefix}lifterlms_user_postmeta WHERE user_id = $user->ID AND meta_key = '_achievement_earned'");
+       
+       
+          $i=0;
         
-    foreach($certificates as $certificate):
-           
-     
-    endforeach;
+       foreach($certificates as $certificate):
+          
+            if($i%2 == 0){
+                
+              $certificatevalue = $certificate->meta_value;  
+            }
+            $i++;  
+            
+       endforeach;
     
-    $achievement_certificate = get_post($certificate->meta_value);
+    
+    $achievement_certificate = get_post($certificatevalue);
 		
     $api->putActivityByMail($user->user_email, 'Achievement Awarded', '' . $achievement_certificate->post_title . '', '', get_permalink($achievement_certificate->ID));
     
