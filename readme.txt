@@ -2,7 +2,7 @@
 Contributors: Genoo, latorante
 Tags: marketing automation, email marketing, lead capture forms, lifterlms
 Requires at least: 3.3
-Tested up to: 5.0
+Tested up to: 5.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Stable tag: 1.3.0
@@ -43,6 +43,9 @@ Extend the power of your relationship with your leads and customers, by knowing 
 == Upgrade Notice ==
 
 == Changelog ==
+
+=1.3.0 =
+Additional Activity Stream support has been added for leads completing course activities:  Quiz passed,Quiz failed,Quiz completed,Certificate Awarded,Achievement Awarded
 
 = 1.2.1 =
 * Compatibility with the latest plugin version
