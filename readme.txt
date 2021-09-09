@@ -2,10 +2,10 @@
 Contributors: Genoo, latorante
 Tags: marketing automation, email marketing, lead capture forms, lifterlms
 Requires at least: 3.3
-Tested up to: 5.8
+Tested up to: 5.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.3.0
+Stable tag: 1.3.11
 
 Extend the power of your relationship with your leads and customers.
 

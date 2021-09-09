@@ -2,7 +2,7 @@
 
 # Get needed versions from a
 PLUGIN_CURRENT_VERSION=$(awk '/   Version/{print $NF}' wpmktgengine-lifter-lms.php)
-PLUGIN_NEXT_VERSION=$(echo $PLUGIN_CURRENT_VERSION | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("%0*d", length($NF), ($NF+1)); print}')
+PLUGIN_NEXT_VERSION=$(echo $PLUGIN_CURRENT_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
 # Get latest WordPress Version
 PLUGIN_WORDPRESS_NEXT_VERSION=$(curl -s "https://api.wordpress.org/core/version-check/1.7/" | jq -r '[.offers[]|select(.response=="upgrade")][0].version')
 PLUGIN_WORDPRESS_CURRENT_VERSION=$(awk '/Tested up to/{print $NF}' readme.txt)
