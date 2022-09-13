@@ -2,7 +2,7 @@
 Contributors: Genoo, latorante
 Tags: marketing automation, email marketing, lead capture forms, lifterlms
 Requires at least: 3.3
-Tested up to: 5.8.2
+Tested up to: 6.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Stable tag: 1.3.13
@@ -43,6 +43,8 @@ Extend the power of your relationship with your leads and customers, by knowing 
 == Upgrade Notice ==
 
 == Changelog ==
+= 1.3.13 =
+Added LifterLMS - WPMktgEngine | Genoo Extension in active plugin list under the tool menu which is placed inside the Genoo/wpme plugins.
 
 =1.3.0 =
 Additional Activity Stream support has been added for leads completing course activities:  Quiz passed,Quiz failed,Quiz completed,Certificate Awarded,Achievement Awarded
