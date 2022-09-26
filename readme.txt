@@ -1,11 +1,11 @@
 === LifterLMS - WPMktgEngine | Genoo Extension ===
 Contributors: Genoo, latorante
 Tags: marketing automation, email marketing, lead capture forms, lifterlms
-Requires at least: 3.3
+Requires at least: 5.3.1
 Tested up to: 6.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.3.13
+Stable tag: 1.3.14
 
 Extend the power of your relationship with your leads and customers.
 
@@ -15,9 +15,9 @@ Extend the power of your relationship with your leads and customers, by knowing 
 
 = Requirements =
 
-1. Wordpress at least version 3.3
-2. PHP at least version 5.3.1
-3. Active WPMktgEngine account (http://wpmktgengine.com)
+1. Wordpress at least version 5.3.1
+2. PHP at least version 7.4
+3. Active WPMktgEngine account (http://wpmktgengine.com) or Genoo account (https://genoo.com).
 
 == Installation ==
 
@@ -43,6 +43,10 @@ Extend the power of your relationship with your leads and customers, by knowing 
 == Upgrade Notice ==
 
 == Changelog ==
+
+= 1.3.14 =
+Updated Requirments.
+
 = 1.3.13 =
 Added LifterLMS - WPMktgEngine | Genoo Extension in active plugin list under the tool menu which is placed inside the Genoo/wpme plugins.
 
